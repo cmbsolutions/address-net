@@ -209,6 +209,9 @@ def synthesise_address(*record) -> (int, np.ndarray, np.ndarray):
     """
     fields = dict(zip(_features.keys(), decode_data(record)))
 
+    print(fields['streetname'] + ' ' + str(fields['housenumber']) + ' ' + fields['houseletter'] + fields[
+        'housenumberext'] + ' ' + fields['postalcode'] + ' ' + fields['city'])
+
     street_number = generate_street_number(fields['housenumber'], fields['houseletter'], fields['housenumberext'])
     street = generate_street_name(fields['streetname'], fields['streetname_short'])
     postcode = labels(fields['postalcode'], 'postalcode')
@@ -217,10 +220,11 @@ def synthesise_address(*record) -> (int, np.ndarray, np.ndarray):
 
     city_postcode = list()
     # Keep city?
-    choose(lambda: city_postcode.append(city))
+    # choose(lambda: city_postcode.append(city))
     # Keep postcode?
-    choose(lambda: city_postcode.append(postcode))
-
+    # choose(lambda: city_postcode.append(postcode))
+    city_postcode.append(postcode)
+    city_postcode.append(city)
     random.shuffle(city_postcode)
 
     # parts = [[street], [street_number], [city_postcode]]
@@ -267,7 +271,7 @@ def generate_street_name(streetname: str, streetname_short: str) -> (str, np.nda
    """
 
     if streetname_short is None or streetname_short == '':
-        street_name = choose(lambda: labels(streetname, 'streetname', True), lambda: labels(streetname, 'streetname'))
+        street_name = choose(lambda: labels(streetname, 'streetname'), lambda: labels(streetname, 'streetname'))
     else:
         street_name = choose(lambda: labels(streetname, 'streetname'), lambda: labels(streetname_short, 'streetname'))
 

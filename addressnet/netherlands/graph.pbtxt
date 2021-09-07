@@ -330,7 +330,7 @@ node {
             size: 1
           }
         }
-        string_val: "E:\\My Documents\\localRepos\\address-net\\addressnet\\untrained\\tf.dataset.train"
+        string_val: "E:\\My Documents\\localRepos\\address-net\\addressnet\\netherlands\\tf.dataset.train"
       }
     }
   }
@@ -514,7 +514,7 @@ node {
         dtype: DT_INT64
         tensor_shape {
         }
-        int64_val: 1000
+        int64_val: 2000
       }
     }
   }
@@ -769,7 +769,7 @@ node {
         dtype: DT_INT64
         tensor_shape {
         }
-        int64_val: 1
+        int64_val: 8
       }
     }
   }
@@ -881,7 +881,7 @@ node {
         dtype: DT_INT64
         tensor_shape {
         }
-        int64_val: 10
+        int64_val: 50
       }
     }
   }
@@ -1220,7 +1220,7 @@ node {
         dtype: DT_INT64
         tensor_shape {
         }
-        int64_val: 1
+        int64_val: 8
       }
     }
   }
@@ -1347,7 +1347,7 @@ node {
         dtype: DT_INT64
         tensor_shape {
         }
-        int64_val: 10000
+        int64_val: 20000
       }
     }
   }

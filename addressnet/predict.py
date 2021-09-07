@@ -132,7 +132,7 @@ def predict(address: List[str], model_dir: str = None) -> List[Dict[str, str]]:
     :return: a list of dictionaries with the address components separated
     """
     if model_dir is None:
-        model_dir = os.path.join(os.path.dirname(__file__), 'pretrained')
+        model_dir = os.path.join(os.path.dirname(__file__), 'netherlands')
     assert os.path.isdir(model_dir), "invalid model_dir provided: %s" % model_dir
     address_net_estimator = _get_estimator(model_fn, model_dir)
     result = address_net_estimator.predict(predict_input_fn(address))
