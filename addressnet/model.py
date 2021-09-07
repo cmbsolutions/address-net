@@ -18,7 +18,8 @@ def model_fn(features: Dict[str, tf.Tensor], labels: tf.Tensor, mode: str, param
     rnn_size = params.get("rnn_size", 128)
     rnn_layers = params.get("rnn_layers", 3)
 
-    embeddings = tf.compat.v1.get_variable("embeddings", dtype=tf.float32, initializer=tf.random.normal(shape=(len(vocab), 8)))
+    embeddings = tf.compat.v1.get_variable("embeddings", dtype=tf.float32,
+                                           initializer=tf.random.normal(shape=(len(vocab), 8)))
     encoded_strings = tf.nn.embedding_lookup(params=embeddings, ids=encoded_text)
 
     logits, loss = nnet(encoded_strings, lengths, rnn_layers, rnn_size, labels, mode == tf.estimator.ModeKeys.TRAIN)
@@ -38,7 +39,9 @@ def model_fn(features: Dict[str, tf.Tensor], labels: tf.Tensor, mode: str, param
             mode, loss=loss, eval_metric_ops=metrics)
 
     if mode == tf.estimator.ModeKeys.TRAIN:
-        train_op = tf.compat.v1.train.AdamOptimizer(learning_rate=0.0001).minimize(loss, global_step=tf.compat.v1.train.get_global_step())
+        train_op = tf.compat.v1.train.AdamOptimizer(learning_rate=0.0001).minimize(loss,
+                                                                                   global_step=
+                                                                                   tf.compat.v1.train.get_global_step())
         return tf.estimator.EstimatorSpec(mode, loss=loss, train_op=train_op)
 
 
@@ -58,13 +61,14 @@ def nnet(encoded_strings: tf.Tensor, lengths: tf.Tensor, rnn_layers: int, rnn_si
     def rnn_cell():
         probs = 0.8 if training else 1.0
         return tf.compat.v1.nn.rnn_cell.DropoutWrapper(tf.compat.v1.nn.rnn_cell.GRUCell(rnn_size),
-                                             state_keep_prob=probs, output_keep_prob=probs)
+                                                       state_keep_prob=probs, output_keep_prob=probs)
 
     rnn_cell_fw = tf.compat.v1.nn.rnn_cell.MultiRNNCell([rnn_cell() for _ in range(rnn_layers)])
     rnn_cell_bw = tf.compat.v1.nn.rnn_cell.MultiRNNCell([rnn_cell() for _ in range(rnn_layers)])
 
-    (rnn_output_fw, rnn_output_bw), states = tf.compat.v1.nn.bidirectional_dynamic_rnn(rnn_cell_fw, rnn_cell_bw, encoded_strings,
-                                                                             lengths, dtype=tf.float32)
+    (rnn_output_fw, rnn_output_bw), states = tf.compat.v1.nn.bidirectional_dynamic_rnn(rnn_cell_fw, rnn_cell_bw,
+                                                                                       encoded_strings,
+                                                                                       lengths, dtype=tf.float32)
     rnn_output = tf.concat([rnn_output_fw, rnn_output_bw], axis=2)
     logits = tf.compat.v1.layers.dense(rnn_output, n_labels, activation=tf.nn.elu)
 

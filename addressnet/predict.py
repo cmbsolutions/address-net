@@ -4,8 +4,8 @@ import textdistance
 import tensorflow as tf
 
 from addressnet.dataset import predict_input_fn, labels_list
-from addressnet.lookups import street_types, street_type_abbreviation, states, street_suffix_types, flat_types, \
-    level_types
+# from addressnet.lookups import street_types, street_type_abbreviation, states, street_suffix_types, flat_types, \
+#    level_types
 from addressnet.model import model_fn
 from functools import lru_cache
 
@@ -51,59 +51,59 @@ def _str_sim(a, b, fn=textdistance.jaro_winkler):
     return fn.normalized_similarity(a.lower(), b.lower())
 
 
-def normalise_state(s: str) -> str:
-    """
-    Converts the state parameter to a standard non-abbreviated form
-    :param s: state string
-    :return: state name in full
-    """
-    if s in states:
-        return states[s]
-    return _get_best_match(s, states, keep_idx=1)
+# def normalise_state(s: str) -> str:
+#    """
+#    Converts the state parameter to a standard non-abbreviated form
+#    :param s: state string
+#    :return: state name in full
+#    """
+#    if s in states:
+#        return states[s]
+#    return _get_best_match(s, states, keep_idx=1)
 
 
-def normalise_street_type(s: str) -> str:
-    """
-    Converts the street type parameter to a standard non-abbreviated form
-    :param s: street type string
-    :return: street type in full
-    """
-    if s in street_types:
-        return s
-    return _get_best_match(s, street_type_abbreviation, keep_idx=0)
+# def normalise_street_type(s: str) -> str:
+#    """
+#    Converts the street type parameter to a standard non-abbreviated form
+#    :param s: street type string
+#    :return: street type in full
+#    """
+#    if s in street_types:
+#        return s
+#    return _get_best_match(s, street_type_abbreviation, keep_idx=0)
 
 
-def normalise_street_suffix(s: str) -> str:
-    """
-    Converts the street suffix parameter to a standard non-abbreviated form
-    :param s: street suffix string
-    :return: street suffix in full
-    """
-    if s in street_suffix_types:
-        return street_suffix_types[s]
-    return _get_best_match(s, street_suffix_types, keep_idx=1)
+# def normalise_street_suffix(s: str) -> str:
+#    """
+#    Converts the street suffix parameter to a standard non-abbreviated form
+#    :param s: street suffix string
+#    :return: street suffix in full
+#    """
+#    if s in street_suffix_types:
+#        return street_suffix_types[s]
+#    return _get_best_match(s, street_suffix_types, keep_idx=1)
 
 
-def normalise_flat_type(s: str) -> str:
-    """
-    Converts the flat type parameter to a standard non-abbreviated form
-    :param s: flat type string
-    :return: flat type in full
-    """
-    if s in flat_types:
-        return s
-    return _get_best_match(s, flat_types)
+# def normalise_flat_type(s: str) -> str:
+#    """
+#    Converts the flat type parameter to a standard non-abbreviated form
+#    :param s: flat type string
+#    :return: flat type in full
+#    """
+#    if s in flat_types:
+#        return s
+#    return _get_best_match(s, flat_types)
 
 
-def normalise_level_type(s: str) -> str:
-    """
-    Converts the level type parameter to a standard non-abbreviated form
-    :param s: level type string
-    :return: level type in full
-    """
-    if s in level_types:
-        return s
-    return _get_best_match(s, level_types)
+# def normalise_level_type(s: str) -> str:
+#    """
+#    Converts the level type parameter to a standard non-abbreviated form
+#    :param s: level type string
+#    :return: level type in full
+#    """
+#    if s in level_types:
+#        return s
+#    return _get_best_match(s, level_types)
 
 
 @lru_cache(maxsize=2)
@@ -146,15 +146,15 @@ def predict(address: List[str], model_dir: str = None) -> List[Dict[str, str]]:
             cls = class_names[class_id - 1]
             mappings[cls] = mappings.get(cls, "") + char
 
-        if 'state' in mappings:
-            mappings['state'] = normalise_state(mappings['state'])
-        if 'street_type' in mappings:
-            mappings['street_type'] = normalise_street_type(mappings['street_type'])
-        if 'street_suffix' in mappings:
-            mappings['street_suffix'] = normalise_street_suffix(mappings['street_suffix'])
-        if 'flat_type' in mappings:
-            mappings['flat_type'] = normalise_flat_type(mappings['flat_type'])
-        if 'level_type' in mappings:
-            mappings['level_type'] = normalise_level_type(mappings['level_type'])
+        # if 'state' in mappings:
+        #    mappings['state'] = normalise_state(mappings['state'])
+        # if 'street_type' in mappings:
+        #    mappings['street_type'] = normalise_street_type(mappings['street_type'])
+        # if 'street_suffix' in mappings:
+        #    mappings['street_suffix'] = normalise_street_suffix(mappings['street_suffix'])
+        # if 'flat_type' in mappings:
+        #    mappings['flat_type'] = normalise_flat_type(mappings['flat_type'])
+        # if 'level_type' in mappings:
+        #    mappings['level_type'] = normalise_level_type(mappings['level_type'])
 
         yield mappings

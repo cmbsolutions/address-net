@@ -3,8 +3,9 @@ import csv
 import tensorflow as tf
 import argparse
 
-from addressnet.lookups import lookup_flat_type, lookup_level_type, lookup_street_type, lookup_street_suffix, \
-    lookup_state
+
+# from addressnet.lookups import lookup_flat_type, lookup_level_type, lookup_street_type, lookup_street_suffix, \
+#    lookup_state
 
 
 def _str_feature(data: str) -> tf.train.Feature:
@@ -16,7 +17,7 @@ def _str_feature(data: str) -> tf.train.Feature:
     return tf.train.Feature(bytes_list=tf.train.BytesList(value=[data.encode()]))
 
 
-def _int_feature(data: int, none_value: int=-1) -> tf.train.Feature:
+def _int_feature(data: int, none_value: int = -1) -> tf.train.Feature:
     """
     Creates an integer feature
     :param data: integer data
@@ -39,7 +40,7 @@ def _float_feature(data: float) -> tf.train.Feature:
     return tf.train.Feature(float_list=tf.train.FloatList(value=[float(data)]))
 
 
-def generate_tf_records(input_file_path: str, output_file_path: str, input_gzip: bool=True):
+def generate_tf_records(input_file_path: str, output_file_path: str, input_gzip: bool = True):
     """
     Processes the input CSV file to produce a tfrecord file
     :param input_file_path: input CSV file
@@ -48,21 +49,19 @@ def generate_tf_records(input_file_path: str, output_file_path: str, input_gzip:
     """
     file_open = gzip.open if input_gzip else open
     file_open_mode = "rt" if input_gzip else "r"
-    with file_open(input_file_path, file_open_mode, newline="") as f:
+    with file_open(input_file_path, file_open_mode, newline="", encoding="utf8") as f:
         csv_reader = csv.DictReader(f)
 
-        string_fields = ('building_name', 'lot_number_prefix', 'lot_number', 'lot_number_suffix', 'flat_number_prefix',
-                         'flat_number_suffix', 'level_number_prefix', 'level_number_suffix', 'number_first_prefix',
-                         'number_first_suffix', 'number_last_prefix', 'number_last_suffix', 'street_name',
-                         'locality_name', 'postcode')
+        string_fields = ('postalcode', 'houseletter', 'housenumberext', 'streetname', 'streetname_short', 'city')
 
-        int_fields = ('flat_number', 'level_number', 'number_first', 'number_last')
+        int_fields = 'housenumber'
+        # , 'bag_id')
 
-        int_lookup_fields = (
-            ('flat_type', lookup_flat_type), ('level_type', lookup_level_type), ('street_type_code', lookup_street_type),
-            ('street_suffix_code', lookup_street_suffix), ('state_abbreviation', lookup_state))
+        # int_lookup_fields = ( ('flat_type', lookup_flat_type), ('level_type', lookup_level_type),
+        # ('street_type_code', lookup_street_type), ('street_suffix_code', lookup_street_suffix),
+        # ('state_abbreviation', lookup_state))
 
-        float_fields = ('latitude', 'longitude')
+        # float_fields = ('latitude', 'longitude')
 
         tf_options = tf.io.TFRecordOptions(tf.compat.v1.python_io.TFRecordCompressionType.GZIP)
         with tf.io.TFRecordWriter(output_file_path, options=tf_options) as tf_writer:
@@ -70,12 +69,15 @@ def generate_tf_records(input_file_path: str, output_file_path: str, input_gzip:
                 record = dict()
                 for field in string_fields:
                     record[field] = _str_feature(row[field])
-                for field in int_fields:
-                    record[field] = _int_feature(row[field])
-                for field, lookup_fn in int_lookup_fields:
-                    record[field] = _int_feature(lookup_fn(row[field]))
-                for field in float_fields:
-                    record[field] = _float_feature(row[field])
+                if type(int_fields) == tuple:
+                    for field in int_fields:
+                        record[field] = _int_feature(row[field])
+                else:
+                    record[int_fields] = _int_feature(row[int_fields])
+                # for field, lookup_fn in int_lookup_fields:
+                #    record[field] = _int_feature(lookup_fn(row[field]))
+                # for field in float_fields:
+                #    record[field] = _float_feature(row[field])
 
                 example = tf.train.Example(features=tf.train.Features(feature=record))
                 tf_writer.write(example.SerializeToString())
@@ -90,4 +92,6 @@ if __name__ == "__main__":
 
     print("Generating tfrecords files...")
     generate_tf_records(args.gnaf_csv, args.tf_record_output, args.gzipped_input)
+    # generate_tf_records("E:/My Documents/localRepos/address-net/test.csv",
+    # "E:/My Documents/localRepos/address-net/test/testset", False)
     print("Done!")
